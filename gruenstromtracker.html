@@ -1,0 +1,76 @@
+<script type="text/javascript">
+    RED.nodes.registerType('gruenstromtracker',{
+        category: 'corrently',
+        color: '#147a50',
+        defaults: {
+            name: {value:""},
+            zipcode: { value:""},
+            reading: {value:0},
+            prepareId: {value:""}
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "font-awesome/fa-id-card-o",
+        label: function() {
+            return this.name||"gruenstromtracker";
+        },   
+        oneditprepare: function(e) {
+            if(!$('#node-input-prepareId').val()) {
+                $.getJSON("https://api.corrently.io/v2.0/coriwallet/prepareTracker?name="+encodeURIComponent($("#node-input-name").val())+"&zipcode="+encodeURIComponent($("#node-input-zipcode").val())+"&reading="+$("#node-input-reading").val()+"",function(data) {
+                    $('#node-input-prepareId').val(data.prepareId);
+                });
+            } else {
+                $.getJSON("https://api.corrently.io/v2.0/coriwallet/prepareTracker?prepareId="+$('#node-input-prepareId').val()+"",function(data) {
+                    $('#node-input-reading').val(data.reading);
+                });
+            }
+            $('#prepareTracker').on('click',function() {                
+                $.getJSON("https://api.corrently.io/v2.0/coriwallet/prepareTracker?prepareId="+$('#node-input-prepareId').val()+"&name="+encodeURIComponent($("#node-input-name").val())+"&zipcode="+encodeURIComponent($("#node-input-zipcode").val())+"&reading="+$("#node-input-reading").val()+"",function(data) {
+                    $('#node-input-prepareId').val(data.prepareId);
+                    $('#connectLink').attr('href','https://tracker.gruenstromindex.de/?prepareId='+data.prepareId);
+                    $('#connectLink').show();
+                    $('#connectLI').show();
+                    $('#prepareTracker').attr('disabled','disabled');
+                });                
+            });        
+        }     
+    });
+</script>
+
+<script type="text/html" data-template-name="gruenstromtracker">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-zipcode"><i class="fa fa-tag"></i> Postleitzahl</label>
+        <input type="text" id="node-input-zipcode" placeholder="(10117 Berlin)">
+    </div>
+    <div class="form-row">
+        <label for="node-input-reading"><i class="fa fa-tag"></i> Zählerstand in Wh</label>
+        <input type="number" id="node-input-reading" placeholder="">
+    </div>
+    <div class="form-row">
+        <ol>
+            <li><button id="prepareTracker">Vorbereiten</button></li>
+            <li id="connectLI" style="display:none"><strong style="color:blue;text-decoration: underline;"><a href="" target="_blank" id="connectLink" style="display:none">Verknüpfen (neues Fenster)</a></strong></li>
+        </ol>        
+    </div>
+    <div class="form-row">
+        <label for="node-input-prepareId"><i class="fa fa-tag"></i> PrepareId</label>
+        <input type="text" id="node-input-prepareId" placeholder="" disabled="disabled" required>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="gruenstromtracker">
+    <p>Mit diesem Node können Zählerstände in Watt-Stunden (Wh) an den <a href="https://tracker.gruenstromindex.de/">GrünstromTracker</a> übermittelt werden, um dafür GrünstromNachweise und Tokens gutgeschrieben zu bekommen.</p>
+    <h3>Einrichtung</h3>
+    <ol>
+        <li>Definiere Name, Postleitzahl und den Anfangszählerstand.</li>
+        <li>Übermittle mit <code>Vorbereiten</code> die Daten zum Tracker</li>
+        <li>Bestätige beim GrünstromTracker das Anlegen und die Daten (neues Fenster).</li>
+        <li>Sende Events mit Zählerständen an den Node.</li>
+    </ol>
+    <h3>Ausgabe</h3>
+    <p>Bei erfolgreicher Übermittlung des Zählerstandes sendet dieses Node im Payload die aktuellen Daten des Trackers und die aktuelle Vorhersage des GrünstromIndex</p>
+</script>

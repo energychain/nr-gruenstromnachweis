@@ -1,0 +1,144 @@
+[
+    {
+        "id": "03f36670f025906a",
+        "type": "tab",
+        "label": "Open Meter - Demo",
+        "disabled": false,
+        "info": "In diesem Flow wird ein Demo Zähler aus dem OpenMeter Projekt verwendet und um einen CO2 Zähler erweiter.",
+        "env": []
+    },
+    {
+        "id": "42073d4f8edd2b1b",
+        "type": "inject",
+        "z": "03f36670f025906a",
+        "name": "Trigger Periodic Reading",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "900",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "num",
+        "x": 170,
+        "y": 60,
+        "wires": [
+            [
+                "f89490e58294162e"
+            ]
+        ]
+    },
+    {
+        "id": "f89490e58294162e",
+        "type": "OpenMeter",
+        "z": "03f36670f025906a",
+        "name": "Demo Meter - 69126 Heidelberg",
+        "meterId": "f02870d4052bf6d35d2bcb536c108c4e30a98875c74eefaea8f4ba457852cdb236525a268ef5cbe1c2aaca9f68dd5ea8",
+        "x": 290,
+        "y": 120,
+        "wires": [
+            [
+                "9c2e0de71ee17e41"
+            ]
+        ]
+    },
+    {
+        "id": "9c2e0de71ee17e41",
+        "type": "function",
+        "z": "03f36670f025906a",
+        "name": "Extract Reading in Wh",
+        "func": "msg.payload = Math.round(msg.payload.values.energy / 10000000);\nnode.status(\"Zählerstand: \"+msg.payload+\"Wh\")\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 180,
+        "wires": [
+            [
+                "4ff86abb62ade262"
+            ]
+        ]
+    },
+    {
+        "id": "4ff86abb62ade262",
+        "type": "gruenstromtracker",
+        "z": "03f36670f025906a",
+        "name": "GrünstromTracker",
+        "zipcode": "69256",        
+        "x": 450,
+        "y": 240,
+        "wires": [
+            [
+                "c38bd643520a853f"
+            ]
+        ]
+    },
+    {
+        "id": "c38bd643520a853f",
+        "type": "debug",
+        "z": "03f36670f025906a",
+        "name": "gCO2 Emission",
+        "active": true,
+        "tosidebar": false,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload.emission",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 560,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "3afae187b5e43fd8",
+        "type": "comment",
+        "z": "03f36670f025906a",
+        "name": "Schritt 1: Konfiguration des GrünstromTrackers einmal öffnen",
+        "info": "Hier steht ",
+        "x": 800,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "7323e8aeda0f92de",
+        "type": "comment",
+        "z": "03f36670f025906a",
+        "name": "Schritt 2: Übernahme (Deploy)",
+        "info": "Hier steht ",
+        "x": 700,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "024bec9ec3a1a0c0",
+        "type": "comment",
+        "z": "03f36670f025906a",
+        "name": "Schritt 3: Vorbereiten und Veknüpfen",
+        "info": "",
+        "x": 720,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "bf5823aca4d5c4e2",
+        "type": "comment",
+        "z": "03f36670f025906a",
+        "name": "Tipp: Übernahme des Anfangszählerstands",
+        "info": "",
+        "x": 740,
+        "y": 80,
+        "wires": []
+    }
+]
